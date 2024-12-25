@@ -1,8 +1,9 @@
+# Surging brightness effect using PWM on an individual LED.
 from machine import Pin, PWM
 from time import sleep
 import math
 
-# Initialize PWM on the LED pin (e.g., Pin 15)
+# Initialize PWM on the LED pin
 led_pin = Pin(2)  # Replace with your LED pin number
 led_pwm = PWM(led_pin)
 led_pwm.freq(1000)  # Set PWM frequency to 1kHz

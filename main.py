@@ -1,71 +1,57 @@
-import machine, neopixel
+# flake8: noqa: E221
+#
+# Ramp the brightness of a NeoPixel blue LED up and down logarithmically, resulting
+# a linear ramp in perceived brightness.
+# Should result in a surging effect.
+
+import machine
+import neopixel
 import math
 import time
 
-np = neopixel.NeoPixel(machine.Pin(6), 1)
+# Configuration Constants
+rampSteps  = 20  # Number of steps as ramp rises and falls
+rampStepMs = 60  # Time in milliseconds between steps
+neoPin     = 6   # Pin for NeoPixel
 
+# Manifest Constants
+ledMax = 255    # Max brightness value for LED
 
-# to calculate duty cycle based on human perception
-def perceived_brightness(level, max_duty):
-    """
-    Maps a level (0 to 1) to a logarithmic brightness scale (0 to max_duty).
-    """
-    return int(math.exp(level * math.log(max_duty)))
+# Derived Constants
+brightStep = 1/rampSteps    # Size of steps in linear ramp
 
+# Ten percent fudge factor to account for accumulating floating point errors
+brightFudge = brightStep/10
 
-def demo(np):
-    n = np.n
+np = neopixel.NeoPixel(machine.Pin(neoPin), 1)
 
-    # cycle
-    for i in range(4 * n):
-        for j in range(n):
-            np[j] = (0, 0, 0)
-        np[i % n] = (255, 255, 255)
-        np.write()
-        time.sleep_ms(25)
+ramp = []       # Ramp of calculated brightness values
 
-    # bounce
-    for i in range(4 * n):
-        for j in range(n):
-            np[j] = (0, 0, 128)
-        if (i // n) % 2 == 0:
-            np[i % n] = (0, 0, 0)
-        else:
-            np[n - 1 - (i % n)] = (0, 0, 0)
-        np.write()
-        time.sleep_ms(60)
+# Converting a linear brightness of 0 to a logarithmic brightness takes exp(0),
+# which is 1, so the LED never goes off unless the first value is forced to 0.
+ramp.append(0)
 
-    # fade in/out
-    for i in range(0, 4 * 256, 8):
-        for j in range(n):
-            if (i // 256) % 2 == 0:
-                val = i & 0xff
-            else:
-                val = 255 - (i & 0xff)
-            np[j] = (val, 0, 0)
-        np.write()
+# Increasing brightness ramp
+linBright = brightStep
+while linBright <= 1+brightFudge:
+    logBright = int(math.exp(linBright * math.log(ledMax)))
+    ramp.append(logBright)
+    linBright += brightStep
 
-    # clear
-    for i in range(n):
-        np[i] = (0, 0, 0)
-    np.write()
+# Decreasing brightness ramp
+linBright = 1
+while linBright >= brightStep+brightFudge:
+    linBright -= brightStep
+    logBright = int(math.exp(linBright * math.log(ledMax)))
+    ramp.append(logBright)
 
-brightStep = 8
-brightMax  = 255
-
-def setBright(b):
-    logB = int(math.exp((b/brightMax) * math.log(brightMax)))
-    print(b, logB)
-    np[0] = (0, 0, logB)
-    np.write()
-    time.sleep_ms(60)
+assert len(ramp) == 2*rampSteps, \
+       "Expecting ramp length of " + str(2*rampSteps) + \
+       ", got " + str(len(ramp))
+print(ramp)
 
 while True:
-    # XXX currently give double zero and double brightMax
-    for i in range(brightStep-1, brightMax+1, brightStep):  # Count up
-        setBright(i)
-        time.sleep_ms(60)
-
-    for i in range(brightMax, -1, -brightStep):  # Count down
-        setBright(i)
-        time.sleep_ms(60)
+    for brightness in ramp:
+        np[0] = (0, 0, brightness) # Set NeoPixel blue LED to calculated brightness
+        np.write()
+        time.sleep_ms(rampStepMs)
