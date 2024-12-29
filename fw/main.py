@@ -10,9 +10,9 @@ import math
 import time
 
 # Configuration Constants
-rampSteps  = 20  # Number of steps as ramp rises and falls
-rampStepMs = 60  # Time in milliseconds between steps
-neoPin     = 6   # Pin for NeoPixel
+rampSteps  = 40  # Number of steps as ramp rises and falls
+rampStepMs = 30  # Time in milliseconds between steps
+neoPin     = 20   # Pin for NeoPixel
 
 # Manifest Constants
 ledMax = 255    # Max brightness value for LED
