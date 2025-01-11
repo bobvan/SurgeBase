@@ -4,7 +4,7 @@
 # a linear ramp in perceived brightness.
 # Should result in a surging effect.
 
-import machine
+import board
 import neopixel
 import math
 import time
@@ -12,7 +12,7 @@ import time
 # Configuration Constants
 rampSteps  = 40  # Number of steps as ramp rises and falls
 rampStepMs = 30  # Time in milliseconds between steps
-neoPin     = 20   # Pin for NeoPixel
+neoPin     = board.P0_31   # Pin for NeoPixel
 
 # Manifest Constants
 ledMax = 255    # Max brightness value for LED
@@ -23,7 +23,7 @@ brightStep = 1/rampSteps    # Size of steps in linear ramp
 # Ten percent fudge factor to account for accumulating floating point errors
 brightFudge = brightStep/10
 
-np = neopixel.NeoPixel(machine.Pin(neoPin), 1)
+np = neopixel.NeoPixel(neoPin, 1)
 
 ramp = []       # Ramp of calculated brightness values
 
@@ -54,4 +54,4 @@ while True:
     for brightness in ramp:
         np[0] = (0, 0, brightness) # Set NeoPixel blue LED to calculated brightness
         np.write()
-        time.sleep_ms(rampStepMs)
+        time.sleep(rampStepMs/1000)
