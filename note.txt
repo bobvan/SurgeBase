@@ -1,1 +1,0 @@
-Install neopixel library on device: cp adafruit-circuitpython-bundle-9.x-mpy-20241224/lib/neopixel.mpy /Volumes/CIRCUITPY/lib
