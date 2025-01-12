@@ -6,6 +6,9 @@ RGB LED ("NeoPixel").
 The ramping code is CircuitPython.
 The hardware is designed to fit inside a 50 mm OD hemisphere, forming
 the base of a Marvel Crisis Protocol figure.
+![Demo Shell](images/IMG_3466.mov)
+![Guts Without Shell One](images/IMG_3490.jpeg)
+![Guts Without Shell Two](images/IMG_3491.jpeg)
 
 # Hardware
 * NRF52840 Low Power MCU https://www.amazon.com/dp/B0DCZJKYL1
@@ -69,6 +72,8 @@ cp fw/code.py /Volumes/CIRCUITPY
   * Solder cells in parallel.
   * Insulate with Kapton tape.
 * Solder battery to `B-` and `B+` pins of MCU.
+* Use foam mounting tape to secure batteries and PCB.
+* Use putty to stick assembly to shell.
 
 # Troubleshooting
 * If light blinks, MCU may by hung from power glitches while soldering the battery. Try briefly shorting the MCU `RST` pin to `GND` to reset it.
